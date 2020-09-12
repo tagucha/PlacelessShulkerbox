@@ -1,0 +1,5 @@
+name: ShulkerHandler
+version: beta-1.0
+main: tgcdev.cos.PluginMain
+author: tagucha
+website: https://github.com/tagucha/ShulkerHandler
