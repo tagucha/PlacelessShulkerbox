@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-
+        this.getServer().getPluginManager().registerEvents(this,this);
     }
 
     @EventHandler
@@ -54,6 +55,11 @@ public class PluginMain extends JavaPlugin implements Listener {
         }
     }
 
+    public boolean isShulkerBox(ItemStack stack) {
+        if (stack == null) return false;
+        return stack.getType().name().contains("SHULKER_BOX");
+    }
+
     public ShulkerBox getShulkerBox(ItemStack stack) {
         if (stack == null) return null;
         ItemMeta meta = stack.getItemMeta();
@@ -65,35 +71,38 @@ public class PluginMain extends JavaPlugin implements Listener {
         return (ShulkerBox) stateMeta.getBlockState();
     }
 
-    public void openBox(Player player,ShulkerBox box) {
+    public void openBox(Player player,@Nullable ShulkerBox box) {
         Inventory inventory = Bukkit.createInventory(player,27,"Shulker Box");
-        for (int i = 0;i < 27;i++) inventory.setItem(i,box.getInventory().getItem(i));
+        if (box != null) for (int i = 0;i < 27;i++) inventory.setItem(i,box.getInventory().getItem(i));
         player.openInventory(inventory);
+        viewers.put(player,inventory);
     }
 
     public void closeBox(Player player,ShulkerBox box) {
         Inventory inv = viewers.get(player);
         for (int i = 0;i < 27;i++) {
             ItemStack item = inv.getItem(i);
-            if (getShulkerBox(item) != null) box.getInventory().setItem(i,new ItemStack(Material.AIR));
-            box.getInventory().setItem(i,item);
+            box.getSnapshotInventory().setItem(i,item);
         }
+        ItemStack item = player.getInventory().getItemInMainHand();
+        BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();
+        meta.setBlockState(box);
+        player.getInventory().getItemInMainHand().setItemMeta(meta);
     }
 
     @EventHandler
     public void onClickShulkerBox(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
         ItemStack stack = event.getItem();
-        ShulkerBox box = getShulkerBox(stack);
-        if (box == null) return;
+        if (!isShulkerBox(stack)) return;
         event.setCancelled(true);
-        openBox(event.getPlayer(),box);
+        openBox(event.getPlayer(),getShulkerBox(stack));
     }
 
     @EventHandler
     public void onClickItem(InventoryClickEvent event) {
         if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) return;
-        if (getShulkerBox(event.getClickedInventory().getItem(event.getSlot())) == null) return;
+        if (!isShulkerBox(event.getClickedInventory().getItem(event.getSlot()))) return;
         event.setCancelled(true);
     }
 }
