@@ -1,4 +1,4 @@
-# ShulkerHandler
+# PlacelessShulkerbox
 
 バージョン: 1.16.2のみテスト済み
 
