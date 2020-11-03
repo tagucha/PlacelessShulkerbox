@@ -1,4 +1,4 @@
-package tgcdev.cos;
+package tgcdev.psbox;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.ShulkerBox;
@@ -71,7 +71,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void openBox(Player player,@Nullable ShulkerBox box) {
-        if (!player.hasPermission("cos.open")) return;
+        if (!player.hasPermission("psbox.open")) return;
         Inventory inventory = Bukkit.createInventory(player,27,"Shulker Box");
         if (box != null) for (int i = 0;i < 27;i++) inventory.setItem(i,box.getInventory().getItem(i));
         player.openInventory(inventory);

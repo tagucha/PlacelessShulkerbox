@@ -1,9 +1,9 @@
 name: PlacelessShulkerbox
-version: beta-1.1
-main: tgcdev.cos.PluginMain
+version: beta-1.2
+main: tgcdev.psbox.PluginMain
 author: tagucha
 website: https://github.com/tagucha/PlacelessShulkerbox
 permissions:
-  cos.open:
+  psbox.open:
     description: To use the function.
     default: true
